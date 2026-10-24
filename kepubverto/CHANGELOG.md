@@ -1,6 +1,6 @@
 # Changelog: kepubverto for calibre
 
-## [Unreleased]
+## [0.1.1] - 2026-10-24
 
 ### Changed
 
