@@ -46,10 +46,9 @@ _spec.loader.exec_module(build)
 
 FORUM = os.path.join(build.DIST, "forum")
 
-#: The plugin's own thread in MobileRead's Plugins forum. **None until it is
-#: posted**: the first release's thread is created with its first attachment,
-#: and its number is written here afterwards.
-THREAD = None
+#: The plugin's own thread in MobileRead's Plugins forum, posted with 0.1.0 on
+#: 2026-10-24 ("[GUI Plugin] kepubverto").
+THREAD = "375915"
 THREAD_URL = ("https://www.mobileread.com/forums/showthread.php?t=%s" % THREAD
               if THREAD else None)
 
