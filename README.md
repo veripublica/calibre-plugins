@@ -4,9 +4,16 @@ calibre plugins for the veripublica EPUB tools, in one repository: what is
 learned about calibre once (its plugin API, packaging, icons, settings) serves
 every tool's plugin, and a change in calibre is followed in one pass.
 
-**Status:** being set up. The epubveri plugin for calibre moves here from
+**Status:** being set up.
+
+| Plugin | Tool | Status |
+|---|---|---|
+| [`kepubverto`](kepubverto) | [kepubverto](https://github.com/veripublica/kepubverto): EPUB to KEPUB for Kobo | in development |
+
+The epubveri plugins for calibre move here from
 [epubveri-plugins](https://github.com/veripublica/epubveri-plugins), unchanged
-for its users; plugins for the other tools follow.
+for their users, once the plugins above have proved this repository's layout,
+build and release flow.
 
 ## How the plugins work
 

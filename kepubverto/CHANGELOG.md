@@ -1,0 +1,17 @@
+# Changelog: kepubverto for calibre
+
+## [Unreleased]
+
+### Added
+
+- Convert the selected books, or the whole library, to KEPUB with kepubverto,
+  as a background job. The stored EPUB is converted as it is and the KEPUB is
+  added to the book.
+- *Save the KEPUB as .kepub.epub…*: the selected books' KEPUBs saved to a
+  folder under kepubverto's own name, `<title> - <authors>.kepub.epub`.
+- A report, one row per book, with *Show in library* and *Copy*.
+- Settings: hyphenation, your own CSS, replacing an existing KEPUB, books
+  converted at the same time, and update checks for kepubverto.
+- kepubverto is downloaded on first use and verified against its release's
+  `SHA256SUMS.txt`; kepubverto 0.3.0 or newer is required.
+- A placeholder icon.
