@@ -91,6 +91,10 @@ the real converter; without it they are skipped.
 
 ## Licence
 
+The icon's k is drawn from the outline of KF Libron Bold by Nico Verbruggen
+([libron](https://github.com/nicoverbruggen/libron), SIL Open Font License
+1.1); no font is included in the plugin. `make_icon.py` draws the icon.
+
 GPL-3.0-only ([LICENSE](../LICENSE)). kepubverto itself is AGPL-3.0-only or a
 commercial licence; the plugin runs it as a separate program and ships none
 of it.

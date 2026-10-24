@@ -1,5 +1,13 @@
 # Changelog: kepubverto for calibre
 
+## [Unreleased]
+
+### Changed
+
+- The icon: a k on calibre's book, in the family's yellow, replacing the
+  placeholder arrow. The k is KF Libron Bold's (Nico Verbruggen, SIL Open
+  Font License), the Kobo build of a font made for e-readers.
+
 ## [0.1.0] - 2026-10-24
 
 ### Added
