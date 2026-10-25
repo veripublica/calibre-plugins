@@ -14,7 +14,7 @@ from calibre.customize import InterfaceActionBase
 PLUGIN_NAME = 'kepubverto'
 #: A literal tuple: calibre's plugin index reads it with an AST parse, and a
 #: release that forgets to bump it is invisible as an update.
-PLUGIN_VERSION_TUPLE = (0, 1, 1)
+PLUGIN_VERSION_TUPLE = (0, 1, 2)
 PLUGIN_VERSION = '.'.join(str(part) for part in PLUGIN_VERSION_TUPLE)
 
 #: The oldest kepubverto this plugin runs (agreed with kepubverto,

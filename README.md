@@ -8,7 +8,7 @@ every tool's plugin, and a change in calibre is followed in one pass.
 
 | Plugin | Tool | Status |
 |---|---|---|
-| [`kepubverto`](kepubverto) | [kepubverto](https://github.com/veripublica/kepubverto): EPUB to KEPUB for Kobo | released — [0.1.1](https://github.com/veripublica/calibre-plugins/releases/tag/kepubverto-v0.1.1) |
+| [`kepubverto`](kepubverto) | [kepubverto](https://github.com/veripublica/kepubverto): EPUB to KEPUB for Kobo | released — [0.1.2](https://github.com/veripublica/calibre-plugins/releases/tag/kepubverto-v0.1.2) |
 
 The epubveri plugins for calibre move here from
 [epubveri-plugins](https://github.com/veripublica/epubveri-plugins), unchanged

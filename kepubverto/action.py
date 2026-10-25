@@ -75,14 +75,17 @@ class KepubvertoAction(InterfaceAction):
             self.menu, 'kepubverto_selection',
             'Convert the selected books to KEPUB', shortcut=None,
             triggered=partial(self.start, 'selection'))
-        self.library_action = self.create_menu_action(
-            self.menu, 'kepubverto_library',
-            'Convert the whole library to KEPUB', shortcut=None,
-            triggered=partial(self.start, 'library'))
         self.save_action = self.create_menu_action(
             self.menu, 'kepubverto_save',
             'Save the KEPUB as .kepub.epub…', shortcut=None,
             triggered=self.save_selected)
+        # Kept apart from the selection, so a slip of the mouse does not
+        # start the whole library.
+        self.menu.addSeparator()
+        self.library_action = self.create_menu_action(
+            self.menu, 'kepubverto_library',
+            'Convert the whole library to KEPUB', shortcut=None,
+            triggered=partial(self.start, 'library'))
         self.menu.addSeparator()
         self.again_action = self.create_menu_action(
             self.menu, 'kepubverto_last', 'Show the last report',
@@ -214,12 +217,16 @@ class KepubvertoAction(InterfaceAction):
                 if existing:
                     replacing = (' %d of them already have a KEPUB, which '
                                  'will be replaced.' % existing)
+            what = ('the whole library (%d books)' % len(jobs)
+                    if scope == 'library' else '%d books' % len(jobs))
+            # For the whole library an Enter out of habit answers No.
             if not question_dialog(
                     self.gui, 'kepubverto',
-                    'Convert %d books to KEPUB and add the KEPUB to each '
+                    'Convert %s to KEPUB and add the KEPUB to each '
                     'book?%s The EPUBs are not changed. It runs in the '
                     'background; you can stop it from this menu, and what '
-                    'is already converted stays.' % (len(jobs), replacing)):
+                    'is already converted stays.' % (what, replacing),
+                    default_yes=scope != 'library'):
                 return
 
         try:

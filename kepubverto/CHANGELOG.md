@@ -1,5 +1,14 @@
 # Changelog: kepubverto for calibre
 
+## [0.1.2] - 2026-10-25
+
+### Changed
+
+- *Convert the whole library to KEPUB* sits in its own section of the menu,
+  away from *Convert the selected books*, so it is harder to pick by mistake.
+- Its question names the whole library and the number of books, and its
+  default button is No.
+
 ## [0.1.1] - 2026-10-24
 
 ### Changed

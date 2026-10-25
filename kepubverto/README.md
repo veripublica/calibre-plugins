@@ -5,7 +5,7 @@ EPUB, with [kepubverto](https://github.com/veripublica/kepubverto). The KEPUB
 is added to each book as calibre's `KEPUB` format, beside the EPUB, which is
 not changed.
 
-> **Released as [0.1.1](https://github.com/veripublica/calibre-plugins/releases/tag/kepubverto-v0.1.1).** Developed and tested on calibre 9.17 on macOS.
+> **Released as [0.1.2](https://github.com/veripublica/calibre-plugins/releases/tag/kepubverto-v0.1.2).** Developed and tested on calibre 9.17 on macOS.
 > `minimum_calibre_version` is 6.0 because that is the oldest release it can
 > load on (`qt.core` arrived with calibre 6); it is not a claim about testing.
 
