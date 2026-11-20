@@ -3,7 +3,7 @@
 Versioned independently of the Sigil plugin and of epubveri itself. The version
 calibre shows comes from `PLUGIN_VERSION_TUPLE` in `__init__.py`.
 
-## [Unreleased]
+## [0.4.6] — 2026-11-20
 
 - **The plugin now lives in
   [veripublica/calibre-plugins](https://github.com/veripublica/calibre-plugins)**,
