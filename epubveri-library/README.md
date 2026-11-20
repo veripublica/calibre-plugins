@@ -1,0 +1,205 @@
+# epubveri library — a calibre plugin
+
+Validate a **whole calibre library** with [epubveri](https://github.com/veripublica/epubveri),
+a fast, JVM-free EPUB validator, and see which defects recur across it.
+
+This is the *library* plugin — it appears in calibre's main window as
+**epubveri library**, the same name it has in Preferences / Plugins. There is a separate **editor** plugin in this repository
+for Edit Book (**Validate with epubveri**), and the two work together: this one
+answers **which** books have a problem, that one answers **what** the problem
+is. They are one product on two surfaces, not two products: same binary, same
+findings, same message ids.
+
+> **Released through [0.5.3](https://github.com/veripublica/epubveri-plugins/releases/tag/calibre-library-v0.5.3).**
+> It is developed and tested on calibre 9.14 on macOS. It
+> has been run by users elsewhere — including a Windows library of about
+> 18,000 books — but no other platform is tested here.
+> `minimum_calibre_version` is 6.0 because that is the oldest release it can
+> *load* on (`qt.core` arrived with calibre 6); it is not a claim about testing.
+
+## What it shows you, and why it is not a list of books
+
+The obvious report is a list of books with an error count beside each. That
+shape was built first, measured against a real library and dropped, for three
+reasons that hold for any library:
+
+* A **won't open / fatal** column would always be empty. epubveri deliberately
+  does not escalate a recoverable fault to fatal, so no real book produced one.
+* **Error count is anti-correlated with variety at the top.** The books with
+  the highest counts trip *one* rule thousands of times — a producer pattern
+  repeated once per paragraph — while the most varied book trips seven rules
+  with a hundredth of the findings. Sorting by count puts the least interesting
+  and most easily fixed book first.
+* **Valid / invalid** fails the same way: about half of a real library is
+  invalid, and a third of those by one or two findings. "Half your library is
+  invalid" teaches nobody anything.
+
+So the report is **one row per defect**, ordered by how many books carry it —
+sketched here, since the rows and the numbers are your library's own:
+
+| Message | What it says | Severity | Books | Findings |
+|---|---|---|---|---|
+| RSC-005 | element "…" is not allowed here | ERROR | … | … |
+| OPF-003 | resource is not declared in the manifest | ERROR | … | … |
+
+Understand one row, fix hundreds of books. Select a row and **Show affected
+books** marks them and filters the library view to them; double-clicking a book
+there opens it in Edit Book, where the editor plugin shows the findings in
+place.
+
+**The report window stays open while you do that**, so a row is a question you
+can ask again — and again of the next row — rather than one that costs the
+scan. If you close it anyway, **Show the last report** in the toolbar menu
+brings it back without re-reading a book — after calibre has been restarted
+too, since the last whole-library scan is kept on disk (see below).
+
+**Export…** writes either of two CSVs: the report you are looking at, one row
+per defect, or one row per book and defect — book id, title, message, severity
+and how many times that book trips it. Both follow the filter the window is
+showing.
+
+**Every report says what it is a report of**: the date and time, how long the
+scan took and how many books at once, the epubveri version, this plugin's, your
+calibre, your operating system and your core count. They are on a line under
+the summary, at the top of both CSVs, and on the clipboard under **Copy → What
+this scan was**.
+
+**The last two whole-library scans are kept on disk**, so the report survives
+calibre restarting and the two can be compared. A scan of *selected* books is
+shown like any other but is not kept as a baseline — measuring three thousand
+books against five would read as a library that had almost entirely repaired
+itself. They are filed under
+calibre's own id for the library, so a report can never be shown against
+another library's books. They include the titles of the books each defect was
+found in; Preferences → Plugins → Customize says how much is stored and can
+delete it. A 474-book library takes about 20 KB compressed, an 18 000-book one
+under a megabyte.
+
+That is not decoration. A report describes a library *as it was on a date* —
+books get added, repaired and removed afterwards, and the date and the book
+count are what let you judge how far a saved report has drifted. Comparing two
+of them needs the epubveri version for the same reason: the difference can be
+your books or it can be our release notes. It also means a scan time you post
+somewhere is one other people can actually compare against.
+
+## Using it
+
+* **epubveri library** in the toolbar opens a menu: **the whole library** or
+  **the selected books**. Either half of the button opens it; neither starts a
+  scan on its own — nothing on the button would say whether it was about to
+  check three books or three thousand, and being wrong about that costs ten
+  minutes.
+* **Compare with the previous scan** subtracts this library's last two scans:
+  one row per rule, books before, books after, and the change. Rules that did
+  not move are hidden until you ask for them. It is the question a single
+  report cannot answer — *is my library better than it was* — and if the two
+  scans were run by different versions of epubveri the window says so, because
+  a rule we changed looks exactly like a book that was repaired.
+* The same menu holds **Show the last report**, **Show books with no EPUB** —
+  the ones a scan counted but could not look at, usually a conversion that
+  never happened — and **Clear the marks it left**, which removes only this
+  plugin's own marks and leaves anybody else's alone. Each is greyed out when
+  there is nothing for it to do, and each can be given a keyboard shortcut
+  under Preferences → Advanced → Shortcuts.
+* **Show the books with no errors** is the other side of the report: after a
+  scan it marks the books that came back clean and filters the library to
+  them.
+
+  It is **no errors** rather than no findings, and the difference decides what
+  you see. epubveri reports the features EPUB 3.4 marks as outdated, so most
+  perfectly valid books carry a usage note for an NCX or an OPF 2 guide; a
+  list defined as "nothing was reported at all" would come back nearly empty
+  and look broken. A book with a warning is in this list and its warning is
+  still in the report. Books with no EPUB, and books that could not be read,
+  are not in it — they were never checked, so "no errors" would be a claim
+  nobody made.
+* **Stop the running check** stops a scan from the plugin's own menu rather
+  than only from the Jobs panel. Several books are checked at once, so
+  stopping waits for the ones already in flight instead of cutting off
+  mid-book, and what was found up to that point is still reported.
+* **Settings** opens the same page as Preferences → Plugins → Customize, one
+  click from the toolbar instead.
+* The scan runs as a background job. calibre stays usable, the Jobs panel shows
+  progress, and **cancelling still shows what it found** — a scan of three
+  thousand books takes about ten minutes and is not thrown away by a change of
+  mind.
+* Only books with an **EPUB** format are checked. Books without one are counted
+  and reported rather than quietly skipped.
+
+### Speed
+
+About **0.2 seconds a book**, so ten minutes for three thousand. epubcheck is
+roughly eleven times slower on the same books (measured: 758 s against 69 s
+over 385 books), which for a library is the difference between a coffee and an
+afternoon. See epubveri's `docs/BENCHMARK.md`.
+
+## What the report ranks
+
+Errors and fatals always. Warnings by default. **Usage notes and advisory
+findings are fetched but not ranked by default**, and the difference is
+deliberate: this table ranks *defects*, and a usage note names a feature the
+book uses rather than anything wrong with it. Ranked in, `CSS-028` (an
+`@font-face` declaration) tops the list on any real library and teaches
+nothing.
+
+They are one checkbox away in the report window, and the window says how many
+findings the current filter is leaving out. Switching a box **re-sorts** the
+report; it never re-validates the library.
+
+Advisory (`ADV-*`) findings are epubveri's own: epubcheck says nothing about
+them and **they never change a verdict**. A book that passes epubcheck passes
+epubveri.
+
+## The validator binary
+
+No epubveri binary ships inside this plugin. On first use it is downloaded from
+epubveri's own releases and **verified against that release's
+`SHA256SUMS.txt`** before anything is extracted, and its hash is checked again
+before every scan.
+
+It lives in `<calibre config>/plugins/epubveri-library-data/`, and it is **this
+plugin's own copy** — the editor plugin keeps a separate one. That costs a
+second 2.8 MB download and buys three things: a library scan holds the binary
+open for ten minutes and **Windows does not allow a running executable to be
+overwritten**, so a shared file could be updated out from under a scan; each
+plugin stays auditable as one folder; and neither plugin ever has to be
+released in step with the other.
+
+Both plugins name the epubveri version they used, so if the two ever drift
+apart you can see it rather than having to wonder.
+
+Automatic update checks are hourly at most, never during a scan, and can be
+switched off in *Preferences → Plugins → Customize*. They cost 842 bytes.
+
+## Installing
+
+1. Download `epubveri_calibre_library_vX.Y.Z.zip` from the
+   [releases](https://github.com/veripublica/epubveri-plugins/releases).
+2. calibre → *Preferences → Plugins → Load plugin from file*.
+3. Add it to a toolbar if calibre does not (*Preferences → Toolbars*).
+
+Do **not** install with `calibre-customize` while calibre is open: it and the
+running GUI write the same file, and the GUI wins.
+
+## Building and testing
+
+```
+python3 plugins/calibre-library/build.py
+/Applications/calibre.app/Contents/MacOS/calibre-debug \
+    plugins/calibre-library/tests/test_plugin.py
+```
+
+The tests run inside calibre's own interpreter and read the working tree, not
+an installed copy. They hold this plugin's own reasoning — the grouping, the
+ordering, the filter, the shared install record — and they cannot see the
+toolbar, the Jobs panel, or a library being written to during a scan. Every
+defect the sibling plugins have had was found by a person clicking.
+
+## Licence
+
+GPL-3.0-only, like everything in this repository. calibre is GPL-3 and this
+plugin imports it, so for this one it is required rather than chosen.
+
+epubveri itself is AGPL-3.0-only OR commercial. This plugin never links it — it
+runs it as a subprocess over its documented JSON envelope — and ships no copy
+of it, so the package conveys no AGPL code.
