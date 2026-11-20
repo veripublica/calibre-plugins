@@ -11,8 +11,8 @@ the top level of the zip**, where Sigil wants a folder. `__init__.py` and
 `plugin-import-name-epubveri.txt` have to be at the root of the archive or
 calibre will not import the plugin at all.
 
-    python3 plugins/calibre-library/build.py
-        -> dist/calibre-library/epubveri_calibre_library_vX.Y.Z.zip
+    python3 epubveri-library/build.py
+        -> dist/epubveri-library/epubveri_calibre_library_vX.Y.Z.zip
 
 **`plugin-import-name-epubveri_library.txt` is the file that must not be lost.**
 calibre keys its loader table by the import name, so this plugin and the editor
@@ -26,10 +26,10 @@ import sys
 import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(HERE))
+ROOT = os.path.dirname(HERE)
 #: Per-plugin, so the two archives cannot collide: both want to be called
 #: `epubveri`, and Sigil's name is part of its install contract.
-DIST = os.path.join(ROOT, "dist", "calibre-library")
+DIST = os.path.join(ROOT, "dist", "epubveri-library")
 
 #: calibre reads the version off the plugin class, so that is where it lives.
 VERSION_RE = re.compile(r"PLUGIN_VERSION_TUPLE\s*=\s*\(([^)]*)\)")
@@ -40,7 +40,7 @@ EXCLUDE = shutil.ignore_patterns("__pycache__", "*.pyc", "tests", "build.py",
                                  # the first time it ran, because only
                                  # `build.py` was named here. Caught before
                                  # the zip was attached anywhere.
-                                 "forum.py",
+                                 "forum.py", "make_icon.py",
                                  "epubveri", "epubveri.exe", ".DS_Store")
 
 

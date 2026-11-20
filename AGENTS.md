@@ -12,13 +12,30 @@ packaging, icons, settings, background jobs) serves every plugin here.
 
 | Folder | Plugin | Tool it runs | Tag | MobileRead thread |
 |---|---|---|---|---|
+| `epubveri/` | epubveri for calibre (Edit Book tool) | [epubveri](https://github.com/veripublica/epubveri), an EPUB validator | `epubveri-vX.Y.Z` | [375293](https://www.mobileread.com/forums/showthread.php?t=375293) |
+| `epubveri-library/` | epubveri library for calibre (library action) | epubveri | `epubveri-library-vX.Y.Z` | [375207](https://www.mobileread.com/forums/showthread.php?t=375207) |
 | `kepubverto/` | kepubverto for calibre | [kepubverto](https://github.com/veripublica/kepubverto), EPUB to KEPUB for Kobo | `kepubverto-vX.Y.Z` | [375915](https://www.mobileread.com/forums/showthread.php?t=375915) |
 
+The two epubveri plugins moved here from
+[epubveri-plugins](https://github.com/veripublica/epubveri-plugins) (a plain
+copy of `plugins/calibre/` and `plugins/calibre-library/` at `937d3e5`; their
+history stays there, under the tags `calibre-v…` and `calibre-library-v…`).
+Unchanged for users: plugin names (`epubveri`, `epubveri library`), import
+names, `JSONConfig` keys (`plugins/epubveri`, `plugins/epubveri_library`), data
+folders (`epubveri-data`, `epubveri-library-data`), zip names, MobileRead
+threads, and version numbers, which continue. Both are in calibre's plugin
+index, which installs the first `.zip` on each thread's first post. Their
+detail is still in their own READMEs. The root `icon.py` of the old repository
+became each plugin's `make_icon.py`, geometry unchanged.
+
+All three plugins ask for their icon with `get_icons('plugin.png', PLUGIN_NAME)`
+(injected by calibre's zip loader), so a user's
+`<config>/resources/images/<plugin name>/plugin.png` replaces it (measured in
+calibre 9.18). The library plugin's setting `button` (`menu`, the default;
+`selection`; `library`, which always asks) decides what the body of its
+toolbar button does; the arrow always opens the menu.
+
 A plugin for [epubsana](https://github.com/veripublica/epubsana) comes next.
-The epubveri plugins for calibre will move here from
-[epubveri-plugins](https://github.com/veripublica/epubveri-plugins) after
-that, unchanged for their users: plugin names, settings keys, import names,
-MobileRead threads and version numbers all carry over.
 
 What a plugin here does not do:
 
@@ -200,7 +217,8 @@ Platforms: Windows, macOS, Linux, wherever a kepubverto build exists.
 `plugin.png`: the k of KF Libron Bold (Nico Verbruggen,
 [libron](https://github.com/nicoverbruggen/libron), SIL Open Font License 1.1)
 on the calibre book, in the family's yellow. `make_icon.py` draws it from the
-glyph outline; no font is in the plugin.
+glyph outline; no font is in the plugin. A user's own
+`<config>/resources/images/kepubverto/plugin.png` replaces it.
 
 ## Layout
 

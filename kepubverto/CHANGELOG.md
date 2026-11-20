@@ -1,5 +1,14 @@
 # Changelog: kepubverto for calibre
 
+## [Unreleased]
+
+### Added
+
+- **You can use your own icon.** Put a `plugin.png` in the `resources/images/kepubverto/`
+  folder of calibre's configuration folder (Preferences / Advanced / Miscellaneous /
+  Open calibre configuration folder) and restart calibre; without one the
+  plugin's own icon is used.
+
 ## [0.1.2] - 2026-10-25
 
 ### Changed

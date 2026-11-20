@@ -49,7 +49,7 @@ from qt.core import (QAbstractItemView, QAction, QApplication, QBrush,
 # The plugin's own package, never a bare `from client import ...` with the
 # plugin folder pushed onto sys.path: `client` is a name any other plugin
 # might also use, and the first one imported would win for both.
-from calibre_plugins.epubveri import PLUGIN_VERSION
+from calibre_plugins.epubveri import PLUGIN_NAME, PLUGIN_VERSION
 from calibre_plugins.epubveri.client import binary as bin_mod
 from calibre_plugins.epubveri.client import runner
 from calibre_plugins.epubveri.client.envelope import EnvelopeError
@@ -1376,6 +1376,11 @@ class EpubVeriTool(Tool):
         the zip — so `plugin.png` has to be at the archive root, which is where
         `build.py` puts everything.
 
+        **Passed our name, so a user can replace the icon** (slimcat, 375207
+        #55): with a plugin name `get_icons` asks `QIcon.ic('epubveri/
+        plugin.png')` first, which finds `<config>/resources/images/epubveri/
+        plugin.png`, and falls back to the zip's own. Measured in calibre 9.18.
+
         Under the tests there is no zip and no injection, so this looks the
         name up rather than trusting it to exist. Calling it blind would raise
         `NameError` inside `create_action`, and calibre **swallows** that:
@@ -1384,7 +1389,7 @@ class EpubVeriTool(Tool):
         """
         from qt.core import QIcon
         get = globals().get('get_icons')
-        return get('plugin.png') if get is not None else QIcon()
+        return get('plugin.png', PLUGIN_NAME) if get is not None else QIcon()
 
     #: A toolbar button that validates when clicked and opens a menu from
     #: its arrow. calibre's own `Tool` documents the three values; `button`

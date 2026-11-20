@@ -10,7 +10,9 @@ answers **which** books have a problem, that one answers **what** the problem
 is. They are one product on two surfaces, not two products: same binary, same
 findings, same message ids.
 
-> **Released through [0.5.3](https://github.com/veripublica/epubveri-plugins/releases/tag/calibre-library-v0.5.3).**
+> **Released through [0.5.4](https://github.com/veripublica/calibre-plugins/releases/tag/epubveri-library-v0.5.4)**, from
+> [calibre-plugins](https://github.com/veripublica/calibre-plugins) since 0.5.4;
+> earlier releases are in [epubveri-plugins](https://github.com/veripublica/epubveri-plugins/releases?q=calibre-library-v&expanded=true).
 > It is developed and tested on calibre 9.14 on macOS. It
 > has been run by users elsewhere — including a Windows library of about
 > 18,000 books — but no other platform is tested here.
@@ -85,10 +87,14 @@ somewhere is one other people can actually compare against.
 ## Using it
 
 * **epubveri library** in the toolbar opens a menu: **the whole library** or
-  **the selected books**. Either half of the button opens it; neither starts a
-  scan on its own — nothing on the button would say whether it was about to
-  check three books or three thousand, and being wrong about that costs ten
-  minutes.
+  **the selected books**. By default either half of the button opens it and
+  neither starts a scan on its own — nothing on the button would say whether
+  it was about to check three books or three thousand, and being wrong about
+  that costs ten minutes. Settings / *A click on the toolbar button* can make
+  the button's body check the selection, or the whole library after asking;
+  the arrow always opens the menu.
+* **Your own icon:** put a `plugin.png` in `resources/images/epubveri library/`
+  inside calibre's configuration folder and restart calibre.
 * **Compare with the previous scan** subtracts this library's last two scans:
   one row per rule, books before, books after, and the change. Rules that did
   not move are hidden until you ask for them. It is the question a single
@@ -174,7 +180,7 @@ switched off in *Preferences → Plugins → Customize*. They cost 842 bytes.
 ## Installing
 
 1. Download `epubveri_calibre_library_vX.Y.Z.zip` from the
-   [releases](https://github.com/veripublica/epubveri-plugins/releases).
+   [releases](https://github.com/veripublica/calibre-plugins/releases?q=epubveri-library-v&expanded=true).
 2. calibre → *Preferences → Plugins → Load plugin from file*.
 3. Add it to a toolbar if calibre does not (*Preferences → Toolbars*).
 
@@ -184,9 +190,9 @@ running GUI write the same file, and the GUI wins.
 ## Building and testing
 
 ```
-python3 plugins/calibre-library/build.py
+python3 epubveri-library/build.py
 /Applications/calibre.app/Contents/MacOS/calibre-debug \
-    plugins/calibre-library/tests/test_plugin.py
+    epubveri-library/tests/test_plugin.py
 ```
 
 The tests run inside calibre's own interpreter and read the working tree, not

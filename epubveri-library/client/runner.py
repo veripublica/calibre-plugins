@@ -1,4 +1,4 @@
-# epubveri-plugins — running the epubveri binary
+# calibre-plugins — running the epubveri binary
 # Copyright (C) 2026 Baris Kayadelen
 # SPDX-License-Identifier: GPL-3.0-only
 # See the LICENSE file at the root of this repository.

@@ -9,7 +9,7 @@
 from calibre.customize import InterfaceActionBase
 
 PLUGIN_NAME = 'epubveri library'
-PLUGIN_VERSION_TUPLE = (0, 5, 3)
+PLUGIN_VERSION_TUPLE = (0, 5, 4)
 PLUGIN_VERSION = '.'.join(str(part) for part in PLUGIN_VERSION_TUPLE)
 
 

@@ -106,12 +106,13 @@ class KepubvertoAction(InterfaceAction):
 
         self.qaction.setMenu(self.menu)
         self.qaction.triggered.connect(self.show_menu)
-        icon = self.load_resources(['plugin.png']).get('plugin.png')
-        if icon:
-            from qt.core import QIcon, QPixmap
-            pixmap = QPixmap()
-            pixmap.loadFromData(icon)
-            self.qaction.setIcon(QIcon(pixmap))
+        # `get_icons` with our name, so a user can replace the icon with
+        # `<config>/resources/images/kepubverto/plugin.png`; calibre falls back
+        # to the zip's own. Injected by calibre's zip loader, so looked up
+        # rather than called blind (MobileRead 375207 #55, measured in 9.18).
+        get = globals().get('get_icons')
+        if get is not None:
+            self.qaction.setIcon(get('plugin.png', PLUGIN_NAME))
 
     def _library_id(self):
         try:

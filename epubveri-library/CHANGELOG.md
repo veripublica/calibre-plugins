@@ -1,5 +1,22 @@
 # Changelog — epubveri library for calibre
 
+## [Unreleased]
+
+- **The plugin now lives in
+  [veripublica/calibre-plugins](https://github.com/veripublica/calibre-plugins)**,
+  beside the other calibre plugins for the veripublica tools. Nothing changes
+  for you: the plugin's name, its settings, its MobileRead thread and calibre's
+  updates stay as they were. Releases before this one stay in
+  [epubveri-plugins](https://github.com/veripublica/epubveri-plugins/releases).
+- **A click on the toolbar button can start a check.** Settings / Scanning /
+  *A click on the toolbar button* chooses: open the menu (the default, as
+  before), check the selected books, or check the whole library, which always
+  asks first. The arrow beside the button always opens the menu.
+- **You can use your own icon.** Put a `plugin.png` in the `resources/images/epubveri library/`
+  folder of calibre's configuration folder (Preferences / Advanced / Miscellaneous /
+  Open calibre configuration folder) and restart calibre; without one the
+  plugin's own icon is used.
+
 ## [0.5.3] — 2026-09-25
 
 - **Each book's row in the per-book export says that book's own message.**

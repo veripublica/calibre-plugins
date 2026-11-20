@@ -1,4 +1,4 @@
-# epubveri-plugins — shared client for the epubveri validator
+# calibre-plugins — shared client for the epubveri validator
 # Copyright (C) 2026 Baris Kayadelen
 # SPDX-License-Identifier: GPL-3.0-only
 # See the LICENSE file at the root of this repository.

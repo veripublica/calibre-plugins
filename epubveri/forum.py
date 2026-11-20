@@ -5,9 +5,9 @@
 # See the LICENSE file at the root of this repository.
 """Stage the two files to attach to the first post of MobileRead 375293.
 
-    python3 plugins/calibre/forum.py
-        -> dist/calibre/forum/epubveri_calibre_vX.Y.Z.zip
-        -> dist/calibre/forum/SHA256SUMS.txt
+    python3 epubveri/forum.py
+        -> dist/epubveri/forum/epubveri_calibre_vX.Y.Z.zip
+        -> dist/epubveri/forum/SHA256SUMS.txt
 
 **This attachment is not a convenience download.** This plugin is in calibre's
 plugin index (verified 2026-09-17 in the live `plugins.json.bz2`:
@@ -34,7 +34,7 @@ of the plugin class in `__init__.py` with an AST parse. Three consequences:
 - the **update trigger is the attachment's `Last-Modified`**, so replacing the
   attachment is the whole of the operation.
 
-Its sibling, `plugins/calibre-library/forum.py`, does the same for the library
+Its sibling, `epubveri-library/forum.py`, does the same for the library
 plugin, which has been in the index too since 2026-09-18.
 
 This script does not touch the forum. Attaching is manual and stays that way.
@@ -49,7 +49,7 @@ import urllib.request
 import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(HERE))
+ROOT = os.path.dirname(HERE)
 
 sys.path.insert(0, HERE)
 import build  # noqa: E402  (sibling module, not a package)
@@ -59,8 +59,8 @@ FORUM = os.path.join(build.DIST, "forum")
 THREAD = "375293"
 THREAD_URL = "https://www.mobileread.com/forums/showthread.php?t=" + THREAD
 
-REPO = "veripublica/epubveri-plugins"
-TAG_PREFIX = "calibre-v"
+REPO = "veripublica/calibre-plugins"
+TAG_PREFIX = "epubveri-v"
 ASSET = "epubveri_calibre_v%s.zip"
 SUMS = "SHA256SUMS.txt"
 

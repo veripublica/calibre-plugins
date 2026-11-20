@@ -689,6 +689,23 @@ class ActionTests(unittest.TestCase):
             self.assertIn(name, wired, '%s is defined and nothing reaches it'
                           % name)
 
+    def test_the_icon_is_asked_for_by_the_plugins_name(self):
+        """So `<config>/resources/images/kepubverto/plugin.png` replaces it
+        (MobileRead 375207 #55)."""
+        import ast
+        path = os.path.join(PLUGIN_DIR, 'action.py')
+        with open(path, encoding='utf-8') as handle:
+            tree = ast.parse(handle.read(), path)
+        calls = [n for n in ast.walk(tree)
+                 if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+                 and n.func.id == 'get' and n.args
+                 and isinstance(n.args[0], ast.Constant)
+                 and n.args[0].value == 'plugin.png']
+        self.assertEqual(len(calls), 1)
+        self.assertEqual([getattr(a, 'id', None) for a in calls[0].args[1:]],
+                         ['PLUGIN_NAME'])
+        self.assertNotIn('load_resources', ast.dump(tree))
+
     def test_stopping_goes_through_the_manager(self):
         import calibre_plugins.kepubverto.action as action
         killed = []

@@ -5,7 +5,11 @@ specification with [epubveri](https://github.com/veripublica/epubveri) — no
 Java, sub-second, and reporting epubcheck's own message IDs so the output is
 recognisable. **It reads your book and reports; it changes nothing.**
 
-> **Released through [0.4.5](https://github.com/veripublica/epubveri-plugins/releases/tag/calibre-v0.4.5),
+> Released from [calibre-plugins](https://github.com/veripublica/calibre-plugins)
+> since 0.4.6; earlier releases are in
+> [epubveri-plugins](https://github.com/veripublica/epubveri-plugins/releases?q=calibre-v&expanded=true).
+>
+> **Released through [0.4.6](https://github.com/veripublica/calibre-plugins/releases/tag/epubveri-v0.4.6),
 > and the only platform it is developed and tested on is calibre 9.14 on
 > macOS.** Users have run it elsewhere — one release exists because of a theme
 > bug reported from another desktop — but no other platform or calibre release
@@ -30,8 +34,8 @@ and neither can break the other.
 ## Installing
 
 1. Download `epubveri_calibre_vX.Y.Z.zip` from
-   [Releases](https://github.com/veripublica/epubveri-plugins/releases) —
-   the one tagged **`calibre-`**, since this repository releases both plugins
+   [Releases](https://github.com/veripublica/calibre-plugins/releases?q=epubveri-v&expanded=true) —
+   the one tagged **`epubveri-v`**, since this repository releases several plugins
    and GitHub's "Latest" badge only means newest by date.
 2. **Preferences → Plugins → Load plugin from file**, choose the zip.
 3. Restart calibre. The tool appears in the Edit Book toolbar and Plugins menu.
@@ -156,6 +160,6 @@ plugin is under the same licence by choice — Sigil's plugin interface is BSD.)
 
 ## Reporting a problem
 
-Issues here: <https://github.com/veripublica/epubveri-plugins/issues>. A wrong
+Issues here: <https://github.com/veripublica/calibre-plugins/issues>. A wrong
 finding rather than a wrong plugin belongs in
 [epubveri](https://github.com/veripublica/epubveri/issues).

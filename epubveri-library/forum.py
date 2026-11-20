@@ -5,9 +5,9 @@
 # See the LICENSE file at the root of this repository.
 """Stage the two files to attach to the first post of MobileRead 375207.
 
-    python3 plugins/calibre-library/forum.py
-        -> dist/calibre-library/forum/epubveri_calibre_library_vX.Y.Z.zip
-        -> dist/calibre-library/forum/SHA256SUMS.txt
+    python3 epubveri-library/forum.py
+        -> dist/epubveri-library/forum/epubveri_calibre_library_vX.Y.Z.zip
+        -> dist/epubveri-library/forum/SHA256SUMS.txt
 
 **It stages the published release asset rather than a local build**, which is
 the whole point: the README promises that the zip on a forum thread can be
@@ -44,7 +44,7 @@ import urllib.request
 import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(HERE))
+ROOT = os.path.dirname(HERE)
 
 sys.path.insert(0, HERE)
 import build  # noqa: E402  (sibling module, not a package)
@@ -54,8 +54,8 @@ FORUM = os.path.join(build.DIST, "forum")
 THREAD = "375207"
 THREAD_URL = "https://www.mobileread.com/forums/showthread.php?t=" + THREAD
 
-REPO = "veripublica/epubveri-plugins"
-TAG_PREFIX = "calibre-library-v"
+REPO = "veripublica/calibre-plugins"
+TAG_PREFIX = "epubveri-library-v"
 ASSET = "epubveri_calibre_library_v%s.zip"
 SUMS = "SHA256SUMS.txt"
 

@@ -143,6 +143,12 @@ class EpubveriLibraryAction(InterfaceAction):
     #: button, which it would otherwise wire to the action, is connected to
     #: opening the same menu. Both halves do one thing, the arrow says there
     #: is a menu, and nothing here can start ten minutes of work by accident.
+    #:
+    #: **That is the default, and since 0.5.4 it is a setting.** JSWolf asked
+    #: for the body to check straight away (375207 #37). `cfg.BUTTON` can make
+    #: the body check the selected books, or the whole library — the latter
+    #: always asks first, whatever the count, because the cost the paragraph
+    #: above describes is still there. The arrow opens the menu in every case.
     popup_type = QToolButton.ToolButtonPopupMode.MenuButtonPopup
     action_type = 'current'
 
@@ -211,13 +217,18 @@ class EpubveriLibraryAction(InterfaceAction):
         self.qaction.setMenu(self.menu)
         # The arrow half opens the menu because Qt does that for
         # `MenuButtonPopup`; this is the other half.
-        self.qaction.triggered.connect(self.show_menu)
-        icon = self.load_resources(['plugin.png']).get('plugin.png')
-        if icon:
-            from qt.core import QIcon, QPixmap
-            pixmap = QPixmap()
-            pixmap.loadFromData(icon)
-            self.qaction.setIcon(QIcon(pixmap))
+        self.qaction.triggered.connect(self.button_clicked)
+        self._sync_button()
+        # **`get_icons` with our name, so a user can replace the icon**
+        # (slimcat, 375207 #55). calibre's zip loader injects it into every
+        # module of the plugin, bound to the zip; given a plugin name it asks
+        # `QIcon.ic('<name>/plugin.png')` first, which finds
+        # `<config>/resources/images/epubveri library/plugin.png`, and falls
+        # back to the zip's own. Measured in calibre 9.18. Looked up rather
+        # than called blind, because outside a zip it does not exist.
+        get = globals().get('get_icons')
+        if get is not None:
+            self.qaction.setIcon(get('plugin.png', PLUGIN_NAME))
 
     def _library_id(self):
         try:
@@ -250,6 +261,22 @@ class EpubveriLibraryAction(InterfaceAction):
             pass
         self.menu.exec(QCursor.pos())
 
+    def button_clicked(self):
+        """The body of the toolbar button: the menu, unless the user chose
+        otherwise in the settings. Read at the click, so a changed setting
+        needs no restart."""
+        self._sync_button()
+        choice = cfg.button()
+        if choice == 'selection':
+            return self.start('selection')
+        if choice == 'library':
+            return self.start('library', confirm=True)
+        return self.show_menu()
+
+    def _sync_button(self):
+        """Say on the button what a click does, since that is now a choice."""
+        self.qaction.setToolTip(cfg.BUTTON_TIPS[cfg.button()])
+
     def _sync_menu(self):
         """What the report items can do right now.
 
@@ -268,6 +295,7 @@ class EpubveriLibraryAction(InterfaceAction):
         self.clear_action.setEnabled(bool(self._marked_ids()))
         self.clean_action.setEnabled(bool(report and self._clean_ids(report)))
         self.stop_action.setEnabled(self._scan_running())
+        self._sync_button()
 
     def _our_jobs(self):
         """Our unfinished scans, newest last.
@@ -345,7 +373,10 @@ class EpubveriLibraryAction(InterfaceAction):
         db = self.gui.current_db
         return list(db.all_ids())
 
-    def start(self, scope='library'):
+    def start(self, scope='library', confirm=False):
+        """Check `scope`. `confirm` asks before any count, not only above
+        500: it is set when the click came from the button's body, where
+        nothing on screen said a whole library was about to be checked."""
         if self._scan_running():
             return error_dialog(
                 self.gui, 'epubveri',
@@ -365,7 +396,7 @@ class EpubveriLibraryAction(InterfaceAction):
                 self.gui, 'epubveri',
                 'None of those books has an EPUB to check.', show=True)
 
-        if len(jobs) > 500 and not question_dialog(
+        if (confirm or len(jobs) > 500) and not question_dialog(
                 self.gui, 'epubveri',
                 'Check %d books? On a typical machine that takes about %d '
                 'minutes. It runs in the background and you can carry on '

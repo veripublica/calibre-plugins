@@ -5,7 +5,7 @@
 """Run these inside calibre's own interpreter, which is where the plugin runs:
 
     /Applications/calibre.app/Contents/MacOS/calibre-debug \\
-        plugins/calibre/tests/test_plugin.py
+        epubveri/tests/test_plugin.py
 
 `calibre-debug` executes a script with calibre importable, so the container
 API is exercised against a real book rather than a mock. Nothing here touches
@@ -33,7 +33,7 @@ import zipfile
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 PLUGIN_DIR = os.path.dirname(TESTS_DIR)
-ROOT = os.path.dirname(os.path.dirname(PLUGIN_DIR))
+ROOT = os.path.dirname(PLUGIN_DIR)
 
 # Resolve `calibre_plugins.epubveri` to the working tree. calibre installs a
 # real import hook for that package name; this stands in for it so the tests
@@ -1683,9 +1683,9 @@ class ResultsDockTests(PinnedPrefs, unittest.TestCase):
         """
         asked = []
 
-        def fake_get_icons(name):
+        def fake_get_icons(name, plugin_name=''):
             from qt.core import QIcon
-            asked.append(name)
+            asked.append((name, plugin_name))
             return QIcon()
 
         plugin.__dict__['get_icons'] = fake_get_icons
@@ -1694,7 +1694,9 @@ class ResultsDockTests(PinnedPrefs, unittest.TestCase):
             tool.create_action()
         finally:
             del plugin.__dict__['get_icons']
-        self.assertEqual(asked, ['plugin.png'])
+        # The plugin name is what lets a user's own icon in
+        # `<config>/resources/images/epubveri/` win over the zip's.
+        self.assertEqual(asked, [('plugin.png', 'epubveri')])
 
     def test_no_zip_means_no_icon_and_no_exception(self):
         """Calling `get_icons` blind would raise NameError inside
@@ -1711,9 +1713,8 @@ class ResultsDockTests(PinnedPrefs, unittest.TestCase):
         """The same three-copies problem the Sigil side has: one mark, two
         plugins, and nothing but this notices when they stop agreeing."""
         import importlib.util
-        root = os.path.dirname(os.path.dirname(PLUGIN_DIR))
         spec = importlib.util.spec_from_file_location(
-            'epubveri_icon', os.path.join(root, 'icon.py'))
+            'epubveri_icon', os.path.join(PLUGIN_DIR, 'make_icon.py'))
         icon = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(icon)
 
@@ -1726,7 +1727,7 @@ class ResultsDockTests(PinnedPrefs, unittest.TestCase):
                     open(os.path.join(PLUGIN_DIR, 'plugin.png'), 'rb') as b:
                 self.assertEqual(a.read(), b.read(),
                                  'plugin.png does not match the geometry; '
-                                 'run icon.py')
+                                 'run make_icon.py')
         finally:
             os.unlink(path)
 

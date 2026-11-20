@@ -20,8 +20,8 @@ re-sorts the table; it never re-validates the library.
 """
 
 from calibre.utils.config import JSONConfig
-from qt.core import (QCheckBox, QHBoxLayout, QLabel, QPushButton, QSpinBox,
-                     QVBoxLayout, QWidget)
+from qt.core import (QCheckBox, QComboBox, QHBoxLayout, QLabel, QPushButton,
+                     QSpinBox, QVBoxLayout, QWidget)
 
 #: Its own file. The binary and the record of which binary it is are shared
 #: with the editor plugin (see `install.py`); the settings are not, because
@@ -42,6 +42,32 @@ prefs.defaults['show_advisory'] = False
 #: the toolbar button could repeat it. The button no longer starts a scan — it
 #: opens the menu, because nothing on it could say which of the two was about
 #: to run — so the value was written on every scan and read by nobody.
+
+#: **What a click on the body of the toolbar button does.** `menu` (the
+#: default) opens the menu, as the button has since 0.1.0; `selection` checks
+#: the selected books; `library` checks the whole library after asking. The
+#: arrow opens the menu in every case. JSWolf, 375207 #37.
+BUTTON = ('menu', 'selection', 'library')
+prefs.defaults['button'] = 'menu'
+
+BUTTON_LABELS = {
+    'menu': _('Opens the menu'),
+    'selection': _('Checks the selected books'),
+    'library': _('Checks the whole library (asks first)'),
+}
+
+BUTTON_TIPS = {
+    'menu': 'Validate this library with epubveri',
+    'selection': 'Validate the selected books with epubveri',
+    'library': 'Validate the whole library with epubveri',
+}
+
+
+def button():
+    """The user's choice, or `menu` for anything a hand-edited file holds."""
+    value = prefs.get('button')
+    return value if value in BUTTON else 'menu'
+
 
 #: How many books are validated at once. **0 means "work it out", and that is
 #: the default rather than a number.**
@@ -209,6 +235,24 @@ class ConfigWidget(QWidget):
         for widget in (label, self.workers):
             widget.setToolTip(explain)
 
+        # In this section rather than a fifth one: see the class docstring.
+        row = QHBoxLayout()
+        label = QLabel(_('A click on the toolbar button:'), self)
+        row.addWidget(label)
+        self.button = QComboBox(self)
+        for key in BUTTON:
+            self.button.addItem(BUTTON_LABELS[key], key)
+        self.button.setCurrentIndex(BUTTON.index(button()))
+        row.addWidget(self.button)
+        row.addStretch(1)
+        layout.addLayout(row)
+        explain = _('The arrow beside the button always opens the menu. '
+                    'Checking the whole library asks first, whatever its '
+                    'size, because nothing on the button says how many '
+                    'books are about to be checked.')
+        for widget in (label, self.button):
+            widget.setToolTip(explain)
+
         layout.addSpacing(10)
         self._section(
             layout, _('The validator'),
@@ -323,3 +367,4 @@ class ConfigWidget(QWidget):
         prefs['show_advisory'] = self.show_advisory.isChecked()
         prefs['autoupdate'] = self.autoupdate.isChecked()
         prefs['workers'] = self.workers.value()
+        prefs['button'] = self.button.currentData()

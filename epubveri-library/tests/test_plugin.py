@@ -5,7 +5,7 @@
 """Run these inside calibre's own interpreter, which is where the plugin runs:
 
     /Applications/calibre.app/Contents/MacOS/calibre-debug \\
-        plugins/calibre-library/tests/test_plugin.py
+        epubveri-library/tests/test_plugin.py
 
 The import shim below points `calibre_plugins.epubveri_library` at the working
 tree, so the tests read the source you are editing and never an installed copy.
@@ -31,7 +31,7 @@ from datetime import datetime
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 PLUGIN_DIR = os.path.dirname(TESTS_DIR)
-ROOT = os.path.dirname(os.path.dirname(PLUGIN_DIR))
+ROOT = os.path.dirname(PLUGIN_DIR)
 
 _pkg = sys.modules.setdefault('calibre_plugins',
                               types.ModuleType('calibre_plugins'))
@@ -161,7 +161,7 @@ class PinnedPrefs(object):
     #: caught by looking at a screenshot of the settings page, not by
     #: anything failing. Add the key here in the same edit that writes it.
     KEYS = ('show_warning', 'show_usage', 'show_advisory', 'autoupdate',
-            'workers')
+            'workers', 'button')
 
     def setUp(self):
         self._saved = {key: cfg.prefs[key] for key in self.KEYS}
@@ -1225,6 +1225,46 @@ class ActionTests(unittest.TestCase):
             self.assertIn(name, wired,
                           '%s is defined and nothing can reach it' % name)
 
+    def test_the_icon_is_asked_for_by_the_plugins_name(self):
+        """With a plugin name `get_icons` looks in
+        `<config>/resources/images/epubveri library/` first, which is how a
+        user replaces the icon (slimcat, 375207 #55). `load_resources` read
+        the zip only."""
+        import ast
+        path = os.path.join(PLUGIN_DIR, 'action.py')
+        with open(path, encoding='utf-8') as handle:
+            tree = ast.parse(handle.read(), path)
+        calls = [node for node in ast.walk(tree)
+                 if isinstance(node, ast.Call)
+                 and isinstance(node.func, ast.Name) and node.func.id == 'get'
+                 and node.args and isinstance(node.args[0], ast.Constant)
+                 and node.args[0].value == 'plugin.png']
+        self.assertEqual(len(calls), 1)
+        self.assertEqual([getattr(a, 'id', None) for a in calls[0].args[1:]],
+                         ['PLUGIN_NAME'])
+        self.assertNotIn('load_resources', ast.dump(tree))
+
+    def test_the_shipped_icon_is_the_one_make_icon_draws(self):
+        """The editor plugin had this test and this one did not
+        (epubveri-plugins' handover, 2026-11-20)."""
+        import importlib.util
+        import tempfile
+        spec = importlib.util.spec_from_file_location(
+            'epubveri_library_make_icon',
+            os.path.join(PLUGIN_DIR, 'make_icon.py'))
+        icon = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(icon)
+        fd, path = tempfile.mkstemp(suffix='.png')
+        os.close(fd)
+        try:
+            icon.write_png(path, mark=icon.BOOK)
+            with open(path, 'rb') as a, \
+                    open(os.path.join(PLUGIN_DIR, 'plugin.png'), 'rb') as b:
+                self.assertEqual(a.read(), b.read(),
+                                 'plugin.png does not match; run make_icon.py')
+        finally:
+            os.unlink(path)
+
     def test_a_book_with_only_a_usage_note_counts_as_clean(self):
         """maddz's request (375207 #23), and the reason it is "no errors".
 
@@ -1340,12 +1380,16 @@ class ActionTests(unittest.TestCase):
         stub = type('Stub', (), {'gui': type('G', (), {})()})()
         self.assertEqual(action.EpubveriLibraryAction._marked_ids(stub), set())
 
-    def test_neither_half_of_the_button_starts_a_scan(self):
+    def test_by_default_neither_half_of_the_button_starts_a_scan(self):
         """The button keeps calibre's drop-down arrow, which needs
         `MenuButtonPopup` — and that mode wires the button's body to the
         action. So the arrow is only safe while that connection goes to the
         menu; `triggered` reaching `start` or `repeat_last` would put ten
         minutes of work behind a stray click again.
+
+        Since 0.5.4 the body goes to `button_clicked`, which opens the menu
+        unless the user chose a scan in the settings (`ButtonTests` holds the
+        default to the menu).
         """
         import ast
         from qt.core import QToolButton
@@ -1367,7 +1411,7 @@ class ActionTests(unittest.TestCase):
                      and node.func.attr == 'connect' and node.args]
         targets = {node.attr for node in connected
                    if isinstance(node, ast.Attribute)}
-        self.assertIn('show_menu', targets)
+        self.assertIn('button_clicked', targets)
         self.assertNotIn('start', targets)
         self.assertNotIn('repeat_last', targets)
 
@@ -1562,6 +1606,60 @@ class ConfigTests(PinnedPrefs, unittest.TestCase):
         self.assertTrue(cfg.prefs.defaults['show_warning'])
 
 
+class ButtonTests(PinnedPrefs, unittest.TestCase):
+    """What a click on the body of the toolbar button does (JSWolf, 375207
+    #37). Called unbound on a stand-in, because the action needs a running
+    calibre and the question is only which method the click reaches."""
+
+    class Stand(object):
+        def __init__(self):
+            self.calls = []
+
+        def start(self, scope, confirm=False):
+            self.calls.append(('start', scope, confirm))
+
+        def show_menu(self):
+            self.calls.append(('menu',))
+
+        def _sync_button(self):
+            pass
+
+    def _click(self):
+        import calibre_plugins.epubveri_library.action as action
+        stand = self.Stand()
+        action.EpubveriLibraryAction.button_clicked(stand)
+        return stand.calls
+
+    def test_the_default_still_only_opens_the_menu(self):
+        self.assertEqual(cfg.prefs.defaults['button'], 'menu')
+        self.assertEqual(self._click(), [('menu',)])
+
+    def test_the_selection_choice_checks_the_selection(self):
+        cfg.prefs['button'] = 'selection'
+        self.assertEqual(self._click(), [('start', 'selection', False)])
+
+    def test_the_whole_library_always_asks_first(self):
+        cfg.prefs['button'] = 'library'
+        self.assertEqual(self._click(), [('start', 'library', True)])
+
+    def test_a_hand_edited_value_falls_back_to_the_menu(self):
+        for junk in ('Library', '', None, 3):
+            cfg.prefs['button'] = junk
+            self.assertEqual(cfg.button(), 'menu')
+
+    def test_every_choice_has_a_label_and_a_tooltip(self):
+        for key in cfg.BUTTON:
+            self.assertTrue(cfg.BUTTON_LABELS[key])
+            self.assertTrue(cfg.BUTTON_TIPS[key])
+
+    def test_confirm_asks_whatever_the_count(self):
+        """Read from the source: `start` needs a library and a GUI."""
+        path = os.path.join(PLUGIN_DIR, 'action.py')
+        with open(path, encoding='utf-8') as handle:
+            self.assertIn('if (confirm or len(jobs) > 500) and not '
+                          'question_dialog(', handle.read())
+
+
 class ConfigWidgetTests(PinnedPrefs, unittest.TestCase):
     """The settings page, built and saved.
 
@@ -1610,7 +1708,7 @@ class ConfigWidgetTests(PinnedPrefs, unittest.TestCase):
         widget = self._widget()
         for control in (widget.show_warning, widget.show_usage,
                         widget.show_advisory, widget.autoupdate,
-                        widget.workers, widget.forget):
+                        widget.workers, widget.button, widget.forget):
             self.assertTrue(control.toolTip().strip(), control)
 
     def test_each_section_says_something_before_you_hover(self):
@@ -1633,7 +1731,9 @@ class ConfigWidgetTests(PinnedPrefs, unittest.TestCase):
         widget.show_advisory.setChecked(True)
         widget.autoupdate.setChecked(False)
         widget.workers.setValue(1)
+        widget.button.setCurrentIndex(cfg.BUTTON.index('library'))
         widget.save_settings()
+        self.assertEqual(cfg.prefs['button'], 'library')
         self.assertFalse(cfg.as_bool(cfg.prefs['show_warning']))
         self.assertTrue(cfg.as_bool(cfg.prefs['show_usage']))
         self.assertTrue(cfg.as_bool(cfg.prefs['show_advisory']))

@@ -3,6 +3,19 @@
 Versioned independently of the Sigil plugin and of epubveri itself. The version
 calibre shows comes from `PLUGIN_VERSION_TUPLE` in `__init__.py`.
 
+## [Unreleased]
+
+- **The plugin now lives in
+  [veripublica/calibre-plugins](https://github.com/veripublica/calibre-plugins)**,
+  beside the other calibre plugins for the veripublica tools. Nothing changes
+  for you: the plugin's name, its settings, its MobileRead thread and calibre's
+  updates stay as they were. Releases before this one stay in
+  [epubveri-plugins](https://github.com/veripublica/epubveri-plugins/releases).
+- **You can use your own icon.** Put a `plugin.png` in the `resources/images/epubveri/`
+  folder of calibre's configuration folder (Preferences / Advanced / Miscellaneous /
+  Open calibre configuration folder) and restart calibre; without one the
+  plugin's own icon is used.
+
 ## [0.4.5] — 2026-09-23
 
 - **The downloaded epubveri binary is unpacked safely.** The plugin fetches
