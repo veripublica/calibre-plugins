@@ -1,6 +1,6 @@
 # Changelog — epubveri library for calibre
 
-## [Unreleased]
+## [0.5.4] — 2026-11-20
 
 - **The plugin now lives in
   [veripublica/calibre-plugins](https://github.com/veripublica/calibre-plugins)**,
